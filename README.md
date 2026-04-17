@@ -245,7 +245,7 @@ voice-translator/
 
 ## Creditos
 
-Desarrollado por **Siliu Xix**
+Desarrollado por **SILIUS - JMSG**
 
 ---
 
