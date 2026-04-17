@@ -1,0 +1,10 @@
+# ── Install PyTorch with CUDA FIRST (see install.bat) ────────────────────────
+# torch>=2.3.0   <-- installed separately via install.bat with the right CUDA wheel
+
+# ── App dependencies ──────────────────────────────────────────────────────────
+faster-whisper>=1.0.0
+chatterbox-tts>=0.1.0       # Voice cloning TTS — no C++ compiler needed
+google-generativeai>=0.7.0  # Traduccion con Gemini Flash (gratis con cuota diaria)
+gradio>=4.44.0
+requests>=2.28.0              # HTTP requests (ElevenLabs API)
+static-ffmpeg>=2.5      # FFmpeg + ffprobe para conversion de audio (sin instalar en el sistema)
