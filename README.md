@@ -40,7 +40,7 @@ Pipeline: **Whisper** (transcripcion) → **Gemini Flash** (traduccion) → **Ch
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/TU_USUARIO/voice-translator.git
+git clone https://github.com/SiliusJM/voice-translator.git
 cd voice-translator
 
 # 2. Ejecuta el instalador (detecta CUDA automaticamente)
@@ -245,7 +245,7 @@ voice-translator/
 
 ## Creditos
 
-Desarrollado por **Siliu6**
+Desarrollado por **Siliu Xix**
 
 ---
 
