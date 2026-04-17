@@ -79,40 +79,96 @@ if errorlevel 1 ( echo. & echo ERROR en dependencias. & pause & exit /b 1 )
 :: chatterbox-tts y transformers descargan torchvision CPU de PyPI.
 :: Instalamos PyTorch CUDA despues para pisarlos con la version correcta.
 :: Se auto-detecta la version CUDA del driver para compatibilidad.
+:: GPUs Blackwell (RTX 50xx) requieren PyTorch NIGHTLY cu128 (sm_120).
 echo.
 echo [3/4] Detectando version CUDA e instalando PyTorch...
 echo.
 
 :: Detectar version CUDA del driver
-set CUDA_URL=https://download.pytorch.org/whl/cu128
+set CUDA_TAG=
+set IS_BLACKWELL=0
 for /f "tokens=*" %%i in ('%PY% -c "import subprocess,re; o=subprocess.check_output(['nvidia-smi'],text=True); m=re.search(r'CUDA Version: (\d+)\.(\d+)',o); major=int(m.group(1)) if m else 0; minor=int(m.group(2)) if m else 0; url='cu118' if major<12 else ('cu121' if minor<4 else ('cu124' if minor<8 else 'cu128')); print(url)"') do set CUDA_TAG=%%i
 
-:: Detectar si es GPU Blackwell (RTX 50xx) — requiere cu128 obligatoriamente
+:: Detectar si es GPU Blackwell (RTX 50xx) — requiere nightly cu128
 for /f "tokens=*" %%g in ('nvidia-smi --query-gpu=name --format=csv,noheader') do set GPU_NAME=%%g
 echo %GPU_NAME% | findstr /i "5060 5070 5080 5090 5050" >nul 2>&1
 if not errorlevel 1 (
-    echo   GPU Blackwell detectada (%GPU_NAME%) -- forzando cu128 (sm_120)
+    echo   GPU Blackwell detectada: %GPU_NAME%
+    echo   Requiere PyTorch nightly con cu128 (arquitectura sm_120)
     set CUDA_TAG=cu128
+    set IS_BLACKWELL=1
 )
 
 if "%CUDA_TAG%"=="" (
     echo   No se detecto CUDA, usando cu128 por defecto...
     set CUDA_TAG=cu128
 )
-set CUDA_URL=https://download.pytorch.org/whl/%CUDA_TAG%
-echo   Detectado: %CUDA_TAG% -- Instalando desde %CUDA_URL%
-echo.
-%PIP% install torch torchvision torchaudio --index-url %CUDA_URL% --force-reinstall --no-deps
-if errorlevel 1 ( echo. & echo ERROR en PyTorch CUDA. & pause & exit /b 1 )
+
+:: Blackwell usa nightly (unica build con kernels sm_120)
+:: Otras GPUs usan stable (mas estable y probado)
+if "%IS_BLACKWELL%"=="1" (
+    set CUDA_URL=https://download.pytorch.org/whl/nightly/cu128
+    echo   Instalando PyTorch NIGHTLY cu128 (requerido para RTX 50xx)
+    echo   (La descarga es ~2.7 GB, puede tardar varios minutos)
+    echo.
+    %PIP% install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 --force-reinstall --no-deps
+) else (
+    set CUDA_URL=https://download.pytorch.org/whl/%CUDA_TAG%
+    echo   Detectado: %CUDA_TAG% -- Instalando desde %CUDA_URL%
+    echo   (La descarga es ~2.7 GB, puede tardar varios minutos)
+    echo.
+    %PIP% install torch torchvision torchaudio --index-url %CUDA_URL% --force-reinstall --no-deps
+)
+if errorlevel 1 (
+    echo.
+    echo   ERROR: No se pudo instalar PyTorch CUDA.
+    echo   Intentando de nuevo sin cache...
+    echo.
+    if "%IS_BLACKWELL%"=="1" (
+        %PIP% install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 --force-reinstall --no-deps --no-cache-dir
+    ) else (
+        %PIP% install torch torchvision torchaudio --index-url %CUDA_URL% --force-reinstall --no-deps --no-cache-dir
+    )
+    if errorlevel 1 (
+        echo.
+        echo   ERROR CRITICO: PyTorch CUDA no se pudo instalar.
+        echo   La app funcionara en modo CPU (mucho mas lento).
+        if "%IS_BLACKWELL%"=="1" (
+            echo   Para instalar manualmente despues:
+            echo     .venv\Scripts\pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 --force-reinstall --no-deps
+        ) else (
+            echo   Para instalar manualmente despues:
+            echo     .venv\Scripts\pip install torch torchvision torchaudio --index-url %CUDA_URL% --force-reinstall --no-deps
+        )
+        echo.
+        pause
+    )
+)
 
 :: --- [4/4] Verificar GPU ---
+:: Se escribe un script .py temporal para evitar problemas de comillas en CMD.
+:: Se ejecuta en subproceso para que un crash/segfault no cierre el instalador.
 echo.
-echo [4/4] Verificando GPU...
-%PY% -c "import torch; c=torch.cuda.is_available(); print('CUDA:', c); print('GPU:', torch.cuda.get_device_name(0) if c else 'NO ENCONTRADA')"
+echo [4/4] Verificando instalacion...
+(
+echo import torch
+echo import warnings
+echo warnings.filterwarnings^('default'^)
+echo v = torch.__version__
+echo c = torch.cuda.is_available^(^)
+echo g = torch.cuda.get_device_name^(0^) if c else 'N/A'
+echo print^('  PyTorch: ' + v^)
+echo print^('  CUDA en wheel: SI' if 'cu' in v else '  CUDA en wheel: NO -- version CPU instalada!'^)
+echo print^('  CUDA disponible: SI' if c else '  CUDA disponible: NO'^)
+echo print^('  GPU: ' + g^)
+) > _verify_gpu.py
+%PY% _verify_gpu.py
+del _verify_gpu.py 2>nul
 
 echo.
 echo ============================================================
 echo  Instalacion completada!  Usa run.bat para iniciar la app.
 echo ============================================================
+echo.
 pause
 exit /b 0
