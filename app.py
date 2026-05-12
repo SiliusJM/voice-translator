@@ -280,13 +280,13 @@ def _save_elevenlabs_key(key: str) -> str:
 
 # Modelos Gemini conocidos
 GEMINI_MODELS = [
-    ("gemini-3.1-flash-lite-preview (15 RPM — RECOMENDADO)", "gemini-3.1-flash-lite-preview"),
-    ("gemini-2.5-flash-lite (10 RPM)", "gemini-2.5-flash-lite"),
-    ("gemini-2.5-flash (5 RPM)", "gemini-2.5-flash"),
-    ("gemini-2.0-flash (10 RPM)", "gemini-2.0-flash"),
-    ("gemini-1.5-flash (15 RPM)", "gemini-1.5-flash"),
+    ("gemini-3.1-flash-lite (15 RPM, 500 RPD — RECOMENDADO)", "gemini-3.1-flash-lite"),
+    ("gemini-2.5-flash-lite (10 RPM, 20 RPD)", "gemini-2.5-flash-lite"),
+    ("gemini-2.5-flash (5 RPM, 50 RPD)", "gemini-2.5-flash"),
+    ("gemini-2.0-flash (10 RPM, 200 RPD)", "gemini-2.0-flash"),
+    ("gemini-1.5-flash (15 RPM, 1500 RPD)", "gemini-1.5-flash"),
 ]
-GEMINI_DEFAULT = "gemini-3.1-flash-lite-preview"
+GEMINI_DEFAULT = "gemini-3.1-flash-lite"
 
 
 def list_gemini_models(api_key: str):
@@ -507,7 +507,7 @@ def translate_batch_gemini(
 
     genai.configure(api_key=api_key)
 
-    FALLBACK_MODELS = ["gemini-3.1-flash-lite-preview", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    FALLBACK_MODELS = ["gemini-3.1-flash-lite", "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
     candidates = [model_name] + [m for m in FALLBACK_MODELS if m != model_name]
 
     model = None

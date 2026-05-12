@@ -2,7 +2,7 @@
 
 Traduce audio de un idioma a otro **conservando tu tono de voz original** usando clonacion de voz local con GPU.
 
-Pipeline: **Whisper** (transcripcion) → **Gemini Flash** (traduccion) → **Chatterbox TTS** (sintesis con tu voz)
+Pipeline: **Whisper** (transcripcion) → **Gemini 3.1 Flash Lite** (traduccion) → **Chatterbox TTS** (sintesis con tu voz)
 
 ![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)
 ![CUDA](https://img.shields.io/badge/CUDA-GPU%20Required-green)
@@ -254,8 +254,16 @@ voice-translator/
 |---|---|---|---|
 | [faster-whisper large-v3](https://github.com/SYSTRAN/faster-whisper) | Transcripcion | ~1.5 GB | GPU local |
 | [Chatterbox TTS](https://github.com/resemble-ai/chatterbox) | Clonacion de voz | ~1.5 GB | GPU local |
-| [Gemini Flash](https://aistudio.google.com) | Traduccion | API | Nube (gratis) |
+| [Gemini 3.1 Flash Lite](https://aistudio.google.com) | Traduccion | API | Nube (gratis, 15 RPM / 500 RPD) |
 | [ElevenLabs](https://elevenlabs.io) (opcional) | TTS alternativo | API | Nube (pago) |
+
+## Historial de cambios
+
+### Mayo 2026
+- Migrado de `gemini-3.1-flash-lite-preview` a `gemini-3.1-flash-lite` (disponibilidad general)
+  - Mismo modelo subyacente, sin cambios en prompts ni logica de traduccion
+  - 500 RPD vs 20 RPD de alternativas mas nuevas — ideal para multiples audios largos
+  - El modelo preview se desactiva el 25 de mayo de 2026
 
 ## Creditos
 
