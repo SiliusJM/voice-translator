@@ -1,12 +1,14 @@
 # Traductor Local de Voz a Voz
 
-Traduce audio de un idioma a otro **conservando tu tono de voz original** usando clonacion de voz local con GPU.
+Traduce audio de un idioma a otro **conservando tu tono de voz original** usando clonación de voz local con GPU.
 
-Pipeline: **Whisper** (transcripcion) → **Gemini 3.1 Flash Lite** (traduccion) → **Chatterbox TTS** (sintesis con tu voz)
+Pipeline: **Whisper** (transcripción) → **Gemini 3.1 Flash Lite** (traducción) → **Chatterbox TTS** (síntesis con tu voz)
 
-![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)
-![CUDA](https://img.shields.io/badge/CUDA-GPU%20Required-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+## 🎥 Video de demostración
+
+[![Demo](https://img.youtube.com/vi/aGUhnEyEC5c/maxresdefault.jpg)](https://youtu.be/aGUhnEyEC5c)
+
+Haz clic en la imagen para ver el video.
 
 ---
 
